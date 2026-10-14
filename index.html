@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Patient Screening and Emegency</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Diagnosis and Filling Odontogram</title>
+  <link rel="stylesheet" href="style.css?v=c67285d453">
 </head>
 <body>
   <div class="odontogram-grid">
@@ -319,6 +319,7 @@
 <div class="note-panel-header"><h2 id="noteHeading">Note</h2><span aria-hidden="true"></span></div>
     <div class="cohri-row note-fields-row">
       <label for="noteNV">NV: <input id="noteNV" class="provided-input" type="text" aria-label="Next visit"></label>
+      <label for="noteAssistantEnabled">Assistant <input id="noteAssistantEnabled" class="provided-input" type="checkbox" aria-controls="noteAssistant"><input id="noteAssistant" class="provided-input" type="text" aria-label="Assistant name" placeholder="Assistant name" hidden></label>
       <label for="notePreceptor">Preceptor: <select id="notePreceptor" class="provided-input"></select><input id="notePreceptorOther" class="provided-input" type="text" aria-label="Other preceptor name" placeholder="Preceptor name" hidden></label>
       <div class="different-preceptors" role="group" aria-label="Different preceptors"><span>If different preceptor</span><div class="different-preceptor-option"><label class="cohri-option"><input id="noteCodesDifferent" class="provided-input" type="checkbox" aria-controls="noteCodesFields">for completing codes</label><span id="noteCodesFields" class="different-preceptor-fields" hidden><select id="noteCodesPreceptor" class="provided-input" aria-label="Preceptor for completing codes"></select><input id="noteCodesOther" class="provided-input" type="text" aria-label="Other preceptor for completing codes" placeholder="Preceptor name" hidden></span></div><div class="different-preceptor-option"><label class="cohri-option"><input id="noteSwipeDifferent" class="provided-input" type="checkbox" aria-controls="noteSwipeFields">for swiping note</label><span id="noteSwipeFields" class="different-preceptor-fields" hidden><select id="noteSwipePreceptor" class="provided-input" aria-label="Preceptor for swiping note"></select><input id="noteSwipeOther" class="provided-input" type="text" aria-label="Other preceptor for swiping note" placeholder="Preceptor name" hidden></span></div></div>
     </div>
@@ -338,6 +339,49 @@
     </div>
   </dialog>
   <template id="preceptorOptions"><option value="">Choose a preceptor</option><option value="Dr. Doyle">Dr. Doyle</option><option value="Dr. Hoch">Dr. Hoch</option><option value="Dr. Kohler">Dr. Kohler</option><option value="Dr. Palo">Dr. Palo</option><option value="Dr. McAllister">Dr. McAllister</option><option value="Dr. Roberts">Dr. Roberts</option><option value="Dr. Calderbank">Dr. Calderbank</option><option value="Dr. Goldsmith">Dr. Goldsmith</option><option value="Dr. Pollock">Dr. Pollock</option><option value="Dr. Poe">Dr. Poe</option><option value="Others">Others</option></template>
-  <script src="script.js"></script>
+  <script src="script.js?v=755248707a"></script>
+
+<script>
+// Preserve one line per category without adding horizontal scrolling.
+(() => {
+  const sections = [...document.querySelectorAll('.finding-section, .treatment-section, .rx-tooth-lines, .note-panel, .chart-side-panel')];
+  let frame;
+  const fit = () => {
+    frame = null;
+    sections.forEach(section => {
+      if (!section.clientWidth) return;
+      const sectionStyle = getComputedStyle(section);
+      const sectionWidth = section.clientWidth - parseFloat(sectionStyle.paddingLeft) - parseFloat(sectionStyle.paddingRight);
+      section.querySelectorAll('.finding-row, .rx-tooth-options:not(.rx-wear-options), .note-fields-row').forEach(row => {
+        row.classList.add(row.classList.contains('note-fields-row') ? 'fit-note-fields' : 'fit-category-line');
+        row.style.zoom = '1';
+        // A category may be inside a smaller multi-column finding group.
+        let available = sectionWidth;
+        for (let parent = row.parentElement; parent && parent !== section; parent = parent.parentElement) {
+          if (getComputedStyle(parent).display === 'contents') continue;
+          const style = getComputedStyle(parent);
+          const width = parent.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+          if (width > 0) available = Math.min(available, width);
+        }
+        const natural = Math.max(row.offsetWidth, row.scrollWidth);
+        row.style.zoom = String(Math.min(1, Math.max(0, available - 2) / (natural || 1)));
+      });
+    });
+  };
+  const schedule = () => { if (!frame) frame = requestAnimationFrame(fit); };
+  const widths = new WeakMap();
+  const observer = new ResizeObserver(entries => {
+    entries.forEach(entry => {
+      if (widths.get(entry.target) !== entry.contentRect.width) {
+        widths.set(entry.target, entry.contentRect.width); schedule();
+      }
+    });
+  });
+  sections.forEach(section => observer.observe(section));
+  window.addEventListener('resize', schedule);
+  if (document.fonts) document.fonts.ready.then(schedule);
+  schedule();
+})();
+</script>
 </body>
 </html>

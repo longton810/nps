@@ -1258,6 +1258,7 @@ byId("providedDetails").addEventListener("input", updatePreparationFields);
 all('input[name="cohri-provided"]').forEach(input => input.addEventListener("change", updatePreparationFields));
 
 function updateTreatmentProvidedFields() {
+  byId('noteAssistant').hidden = !byId('noteAssistantEnabled').checked;
   ['Codes','Swipe'].forEach(role=>{
     byId('note'+role+'Fields').hidden=!byId('note'+role+'Different').checked;
     byId('note'+role+'Other').hidden=byId('note'+role+'Preceptor').value!=='Others';
@@ -1278,6 +1279,7 @@ function readTreatmentProvided() {
 }
 
 function restoreTreatmentProvided(data = {}) {
+  data = { ...data, noteAssistantEnabled: typeof data.noteAssistantEnabled === 'boolean' ? data.noteAssistantEnabled : Boolean(data.noteAssistant?.trim()) };
   all(".provided-input").forEach(input => {
     const saved = data?.[input.id];
     if (["checkbox", "radio"].includes(input.type)) {
@@ -1360,7 +1362,7 @@ function generateClinicalNote(s) {
   ];
   const rolePreceptor=role=>p['note'+role+'Preceptor']==='Others' ? p['note'+role+'Other'] || '' : p['note'+role+'Preceptor'] || '';
   const additionalPreceptors=[p.noteCodesDifferent && rolePreceptor('Codes') ? rolePreceptor('Codes')+' - for completed codes' : '',p.noteSwipeDifferent && rolePreceptor('Swipe') ? rolePreceptor('Swipe')+' - for swiping note' : ''].filter(Boolean);
-  lines.push("", `${bold("NV:")} ${escape(noteBlank(p.noteNV))}`, `${bold("Student Dr:")} Long Ton`, `${bold("Preceptor:")} ${escape(p.notePreceptor === "Others" ? noteBlank(p.notePreceptorOther) : p.notePreceptor)}`,
+  lines.push("", `${bold("NV:")} ${escape(noteBlank(p.noteNV))}`, `${bold("Student Dr:")} Long Ton`, ...(p.noteAssistantEnabled ? [`${bold("Assistant:")} ${escape(noteBlank(p.noteAssistant))}`] : []), `${bold("Preceptor:")} ${escape(p.notePreceptor === "Others" ? noteBlank(p.notePreceptorOther) : p.notePreceptor)}`,
     ...(additionalPreceptors.length ? [bold('('+additionalPreceptors.join(', ')+')')] : []),
     `${bold("Clinic:")} POD2 - 242`);
 

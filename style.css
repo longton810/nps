@@ -519,3 +519,131 @@ button:focus-visible,.tooth-number:focus-visible { outline:2px solid #2563eb; ou
 @keyframes note-copy-blink { 0%,100% { background-color: transparent; box-shadow: none; } 35% { background-color: rgba(254,240,138,.45); box-shadow: 0 0 0 4px rgba(253,224,71,.18); } }
 #generatedNote.note-copy-blink { animation: note-copy-blink .6s ease-out; border-radius: 8px; }
 @media (prefers-reduced-motion: reduce) { #generatedNote.note-copy-blink { animation: note-copy-blink .2s linear; } }
+
+/* Fit the page to the screen while preserving vertical scrolling. */
+*, *::before, *::after { box-sizing: border-box; }
+body { max-width: 100%; }
+fieldset { min-inline-size: 0; }
+input, textarea, select, iframe { max-width: 100%; }
+textarea { resize: vertical; }
+[contenteditable="true"] { overflow-wrap: anywhere; }
+
+body .clinical-panel, body .clinical-panels, body .chart-treatment-layout,
+body .chart-side-panel, body .treatment-side-panel, body .note-panel { min-width: 0; max-width: 100%; }
+body .finding-section .finding-row, body .treatment-section .finding-row,
+body .category-pair, body .recall-findings-line,
+body .chart-treatment-layout .treatment-section .finding-row,
+body .chart-treatment-layout .treatment-section .finding-row.treatment-single-line {
+  flex-wrap: wrap; min-width: 0; max-width: 100%; overflow-x: visible;
+}
+body .finding-label { min-width: 0; }
+body .dentition-canvas, body #recallEvaluation .dentition-canvas,
+body .odontogram-grid .dentition-canvas { width: 100%; min-width: 0; max-width: 100%; }
+body .arch { width: 100%; overflow-x: visible; gap: clamp(1px, .2vw, 3px); }
+body .arch > .tooth, body #recallEvaluation .arch > .tooth,
+body .odontogram-grid .arch > .tooth { flex: 1 1 0; width: auto; min-width: 0; max-width: 75px; }
+body .arch .tooth-diagram, body #recallEvaluation .arch .tooth-diagram,
+body .odontogram-grid .arch .tooth-diagram { width: 100%; max-width: 68px; }
+body .arch .tooth-number, body #recallEvaluation .arch .tooth-number,
+body .odontogram-grid .arch .tooth-number { width: 75%; min-width: 0; max-width: 51px; padding-inline: 0; }
+body .arch .tooth-findings-text, body .arch .tooth-finding-tags {
+  width: 100%; max-width: 75px; overflow-wrap: anywhere; white-space: normal;
+}
+body .arch .tooth-findings-text > * { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+body .rx-odontogram { overflow-x: visible; }
+body .rx-quadrants { width: 100%; min-width: 0; max-width: 656px; grid-template-columns: repeat(2, minmax(0,1fr)); }
+body .rx-quadrant { grid-template-columns: repeat(8, minmax(0,1fr)); min-width: 0; gap: 3px; padding-inline: 4px; }
+body .rx-tooth-rectangle { width: 100%; max-width: 36px; }
+body .cohri-row, body .extra-oral-row, body .note-fields-row,
+body .different-preceptors, body .rx-toolbar, body .occlusion-layout,
+body .malocclusion-controls { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+body .cohri-row > *, body .extra-oral-row > *, body .note-fields-row > * { max-width: 100%; }
+body .chart-text, body .chart-tag-list { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 1100px) {
+  body .chart-treatment-layout { grid-template-columns: minmax(0,1fr); }
+  body .treatment-side-panel { position: static; }
+}
+@media (max-width: 900px) {
+  body .arch .tooth-number { margin-top: 0; }
+}
+@media (max-width: 600px) {
+  body { padding: 12px; }
+  body .odontogram-grid { padding-inline: 8px; }
+  body .finding-section, body .treatment-section { max-width: 100%; }
+  body .cohri-panel .cohri-details { min-width: 0; }
+  body .different-preceptors { margin-left: 0; }
+}
+
+body .arch { justify-content: center; }
+body .cohri-option, body .decision-option { white-space: normal; overflow-wrap: anywhere; }
+body .rx-toolbar > *, body .rx-evaluation-row > *, body .occlusion-main { min-width: 0; max-width: 100%; }
+body .rx-history-controls, body .rx-dentition-controls, body .rx-tooth-controls,
+body #malocclusionOptions { flex-wrap: wrap; }
+@media (max-width: 600px) {
+  body .rx-toolbar { grid-template-columns: minmax(0,1fr); }
+  body .rx-toolbar > * { grid-column: 1; grid-row: auto; justify-self: start; }
+}
+
+/* Keep each finding/treatment category together; fit oversized groups. */
+body .finding-section .finding-row.fit-category-line,
+body .treatment-section .finding-row.fit-category-line,
+body .chart-treatment-layout .treatment-section .finding-row.fit-category-line,
+body .chart-treatment-layout .treatment-section .finding-row.treatment-single-line.fit-category-line {
+  display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap;
+  width: max-content; max-width: none; min-width: 0; overflow: visible;
+}
+.fit-category-line > button, .fit-category-line > .finding-label { flex-shrink: 0; white-space: nowrap; }
+
+/* Align category lines to the left, retaining one line per category. */
+body .finding-section, body .treatment-section, body .recall-findings-line,
+body .finding-section .category-pair, body .treatment-section .category-pair {
+  justify-content: flex-start; justify-items: start; text-align: left;
+}
+body .finding-section .finding-row.fit-category-line,
+body .treatment-section .finding-row.fit-category-line,
+body .chart-treatment-layout .treatment-section .finding-row.fit-category-line {
+  justify-content: flex-start; justify-self: start; text-align: left;
+  margin-left: 0; margin-right: 0; flex-wrap: nowrap;
+}
+body .rx-tooth-lines { flex: 1 1 0; min-width: 0; max-width: 100%; align-items: flex-start; }
+body .rx-tooth-options.fit-category-line {
+  display: inline-flex; flex: 0 0 auto; flex-wrap: nowrap; width: max-content;
+  max-width: none; min-width: 0; justify-content: flex-start; text-align: left;
+}
+
+/* Keep categories together and pack them into left-aligned rows. */
+body .finding-section, body .treatment-section,
+body .chart-treatment-layout .treatment-section {
+  display: flex; flex-direction: row; flex-wrap: wrap; align-items: center;
+  justify-content: flex-start; gap: 4px 12px; width: 100%;
+}
+body .finding-section .category-pair,
+body .finding-section .recall-findings-line,
+body .treatment-section .category-pair { display: contents; }
+body .finding-section .finding-row.fit-category-line,
+body .treatment-section .finding-row.fit-category-line,
+body .chart-treatment-layout .treatment-section .finding-row.fit-category-line {
+  align-self: auto; margin-inline: 0; justify-content: flex-start;
+  flex-wrap: nowrap; flex: 0 0 auto;
+}
+body .finding-section .finding-row::after,
+body .treatment-section .finding-row::after { content: none; }
+
+/* Keep Note header controls on one shared line. */
+body .note-fields-row.fit-note-fields {
+  display: inline-flex; flex-direction: row; flex-wrap: nowrap; align-items: flex-start;
+  justify-content: flex-start; gap: 8px 14px; width: max-content; max-width: none;
+}
+body .note-fields-row.fit-note-fields > label {
+  display: inline-flex; flex-direction: row; flex-wrap: nowrap; align-items: center;
+  gap: 6px; flex: none; white-space: nowrap; min-height: 30px;
+}
+body .note-fields-row.fit-note-fields #noteNV { width: 100px; }
+body .note-fields-row.fit-note-fields #noteAssistant { width: 120px; }
+body .note-fields-row.fit-note-fields #notePreceptor { width: 150px; }
+body .note-fields-row.fit-note-fields .different-preceptors {
+  flex: none; flex-wrap: nowrap; align-items: flex-start; margin-left: 0;
+  justify-content: flex-start; gap: 12px; white-space: nowrap;
+}
+body .note-fields-row.fit-note-fields .different-preceptor-option { flex: none; }
+body .note-fields-row.fit-note-fields .cohri-option { white-space: nowrap; }
