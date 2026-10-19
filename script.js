@@ -1367,6 +1367,12 @@ function procedureCompletedText(s) {
   completed.push(...(c.radiographs || []));
   if(hasText(c.extraOralExam) || Object.values(c.extraOralStructured || {}).some(item=>Boolean(item?.choice)))completed.push('E/O screening');
   if(hasText(c.intraOralExam) || Object.values(c.intraOralStructured?.choices || {}).some(Boolean) || Object.values(c.intraOralStructured?.occlusion || {}).some(hasText))completed.push('I/O screening');
+  const limited = c.acceptanceDecision?.limited;
+  if (limited && !limited.none) {
+    if (limited.antibiotic) completed.push('Antibiotic prescription');
+    if (limited.extraction) completed.push('Emergency extraction');
+    if (limited.pulpotomy) completed.push('Therapeutic pulpotomy');
+  }
   completed.push('OHI','nutritional counseling');
   const recipient=child ? 'parents/guardian' : 'patient';
   return completed.join(', ')+'.\nFindings reviewed with the '+recipient+' about risk and benefits of recommended treatment options discussed.';
