@@ -4,12 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Diagnosis and Filling Odontogram</title>
-  <link rel="stylesheet" href="style.css?v=c67285d453">
+  <link rel="stylesheet" href="style.css?v=02b7f74610">
 </head>
-<body>
+<body class="visit-unselected">
+  <div class="visit-type-row" role="group" aria-label="Visit type">
+    <input hidden class="visit-type-choice" type="radio" name="visit-type" value="New patient screening" id="visitType0"><button type="button" class="visit-type-button screening" data-visit-input="visitType0" aria-pressed="false">New patient screening</button>
+    <input hidden class="visit-type-choice" type="radio" name="visit-type" value="Emergency/New patient" id="visitType1"><button type="button" class="visit-type-button emergency-new" data-visit-input="visitType1" aria-pressed="false">Emergency/New patient</button>
+    <input hidden class="visit-type-choice" type="radio" name="visit-type" value="Emergency/Established patient" id="visitType2"><button type="button" class="visit-type-button emergency-established" data-visit-input="visitType2" aria-pressed="false">Emergency/Established patient</button>
+  </div>
+
   <div class="odontogram-grid">
     <section class="clinical-panel intake-panel" aria-labelledby="initialHeading">
-      <div class="cohri-row visit-type-row" role="group" aria-label="Visit type"><label class="cohri-option"><input class="visit-type-choice" type="radio" name="visit-type" value="New patient screening">New patient screening</label><label class="cohri-option"><input class="visit-type-choice" type="radio" name="visit-type" value="Emergency/New patient">Emergency/New patient</label><label class="cohri-option"><input class="visit-type-choice" type="radio" name="visit-type" value="Emergency/Established patient">Emergency/Established patient</label></div>
+
       <div class="cohri-row chief-complaint-row"><label class="cohri-label chief-complaint-label" for="chiefComplaint">Chief complaint</label><input id="chiefComplaint" class="intake-input cohri-details" type="text"></div>
       <h2 id="initialHeading">Initial observation</h2>
       <fieldset class="observation-category"><legend>Behaviour</legend>
@@ -59,13 +65,13 @@
         </label>
         </div>
       </div>
-      <div class="cohri-row medical-history-row cohri-bordered-area"><label class="cohri-label" id="historyLabel" for="historyDetails">Medical history</label><div class="medical-history-content"><div class="medical-history-options" role="group" aria-label="Medical history conditions"><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="joint">Total joint replacement</label><input id="mh-joint-details" class="cohri-details mh-details" data-medical="joint" type="text" aria-label="Total joint replacement details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="heart">Heart diseases/cardiac surgery</label><input id="mh-heart-details" class="cohri-details mh-details" data-medical="heart" type="text" aria-label="Heart diseases/cardiac surgery details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="cancer">Cancer/malignant diseases</label><input id="mh-cancer-details" class="cohri-details mh-details" data-medical="cancer" type="text" aria-label="Cancer/malignant diseases details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="chemo-radiation">Chemothery/radiation</label><input id="mh-chemo-radiation-details" class="cohri-details mh-details" data-medical="chemo-radiation" type="text" aria-label="Chemothery/radiation details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="hypertension">Hypertension</label><input id="mh-hypertension-details" class="cohri-details mh-details" data-medical="hypertension" type="text" aria-label="Hypertension details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="cholesterol">High cholesterol</label><input id="mh-cholesterol-details" class="cohri-details mh-details" data-medical="cholesterol" type="text" aria-label="High cholesterol details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="diabetes">Diabetes</label><span id="mhDiabetesOptions" class="mh-diabetes-options" role="group" aria-label="Diabetes type" hidden><label class="cohri-option"><input class="mh-diabetes-type" type="radio" name="mh-diabetes-type" value="Type 1">Type 1</label><label class="cohri-option"><input class="mh-diabetes-type" type="radio" name="mh-diabetes-type" value="Type 2">Type 2</label></span><input id="mh-diabetes-details" class="cohri-details mh-details" data-medical="diabetes" type="text" aria-label="Diabetes details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="hyperthyroidism">Hyperthyroidism</label><input id="mh-hyperthyroidism-details" class="cohri-details mh-details" data-medical="hyperthyroidism" type="text" aria-label="Hyperthyroidism details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="hypothyroidism">Hypothyroidism</label><input id="mh-hypothyroidism-details" class="cohri-details mh-details" data-medical="hypothyroidism" type="text" aria-label="Hypothyroidism details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="gerd">GERD</label><input id="mh-gerd-details" class="cohri-details mh-details" data-medical="gerd" type="text" aria-label="GERD details" hidden></span></div><label class="medical-additional-label" for="historyDetails">Additional information</label><textarea id="historyDetails" class="cohri-details history-blank" rows="2" aria-label="Additional medical history"></textarea></div></div>
-      <div class="cohri-row allergy-row cohri-bordered-area"><label class="cohri-label" for="allergyDetails">Allergy</label><div class="allergy-content">
+      <div class="cohri-row medical-history-row cohri-bordered-area"><div class="cohri-label history-review-heading"><label class="cohri-label" id="historyLabel" for="historyDetails">Medical history</label><div class="history-review" data-review="history" role="group" aria-label="Medical history changes" hidden><label class="cohri-option"><input class="history-review-choice" type="radio" name="review-history" value="no-change" aria-controls="reviewContent-history">No change</label><label class="cohri-option"><input class="history-review-choice" type="radio" name="review-history" value="change" aria-controls="reviewContent-history">Change</label></div></div><div class="medical-history-content history-review-content" id="reviewContent-history"><div class="medical-history-options" role="group" aria-label="Medical history conditions"><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="joint">Total joint replacement</label><input id="mh-joint-details" class="cohri-details mh-details" data-medical="joint" type="text" aria-label="Total joint replacement details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="heart">Heart diseases/cardiac surgery</label><input id="mh-heart-details" class="cohri-details mh-details" data-medical="heart" type="text" aria-label="Heart diseases/cardiac surgery details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="cancer">Cancer/malignant diseases</label><input id="mh-cancer-details" class="cohri-details mh-details" data-medical="cancer" type="text" aria-label="Cancer/malignant diseases details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="chemo-radiation">Chemothery/radiation</label><input id="mh-chemo-radiation-details" class="cohri-details mh-details" data-medical="chemo-radiation" type="text" aria-label="Chemothery/radiation details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="hypertension">Hypertension</label><input id="mh-hypertension-details" class="cohri-details mh-details" data-medical="hypertension" type="text" aria-label="Hypertension details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="cholesterol">High cholesterol</label><input id="mh-cholesterol-details" class="cohri-details mh-details" data-medical="cholesterol" type="text" aria-label="High cholesterol details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="diabetes">Diabetes</label><span id="mhDiabetesOptions" class="mh-diabetes-options" role="group" aria-label="Diabetes type" hidden><label class="cohri-option"><input class="mh-diabetes-type" type="radio" name="mh-diabetes-type" value="Type 1">Type 1</label><label class="cohri-option"><input class="mh-diabetes-type" type="radio" name="mh-diabetes-type" value="Type 2">Type 2</label></span><input id="mh-diabetes-details" class="cohri-details mh-details" data-medical="diabetes" type="text" aria-label="Diabetes details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="hyperthyroidism">Hyperthyroidism</label><input id="mh-hyperthyroidism-details" class="cohri-details mh-details" data-medical="hyperthyroidism" type="text" aria-label="Hyperthyroidism details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="hypothyroidism">Hypothyroidism</label><input id="mh-hypothyroidism-details" class="cohri-details mh-details" data-medical="hypothyroidism" type="text" aria-label="Hypothyroidism details" hidden></span><span class="mh-item"><label class="cohri-option"><input class="mh-choice" type="checkbox" value="gerd">GERD</label><input id="mh-gerd-details" class="cohri-details mh-details" data-medical="gerd" type="text" aria-label="GERD details" hidden></span></div><label class="medical-additional-label" for="historyDetails">Additional information</label><textarea id="historyDetails" class="cohri-details history-blank" rows="2" aria-label="Additional medical history"></textarea></div></div>
+      <div class="cohri-row allergy-row cohri-bordered-area"><div class="cohri-label history-review-heading"><label class="cohri-label" for="allergyDetails">Allergy</label><div class="history-review" data-review="allergy" role="group" aria-label="Allergy changes" hidden><label class="cohri-option"><input class="history-review-choice" type="radio" name="review-allergy" value="no-change" aria-controls="reviewContent-allergy">No change</label><label class="cohri-option"><input class="history-review-choice" type="radio" name="review-allergy" value="change" aria-controls="reviewContent-allergy">Change</label></div></div><div class="allergy-content history-review-content" id="reviewContent-allergy">
         <div class="allergy-options" role="group" aria-label="Allergy options"><label class="cohri-option"><input class="allergy-choice" type="checkbox" value="Penicillin allergy">Penicillin allergy</label><label class="cohri-option"><input class="allergy-choice" type="checkbox" value="Novocaine allergy">Novocaine allergy</label></div>
         <label class="medical-additional-label" for="allergyDetails">Additional information</label><textarea id="allergyDetails" class="cohri-details history-blank" rows="2"></textarea>
       </div></div>
-      <div class="cohri-row medication-history-row cohri-bordered-area"><label class="cohri-label" id="medicationLabel" for="medicationDetails">Other medication and social history</label><div class="medication-content"><div class="medication-options" role="group" aria-label="Medication and substance options"><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="smoking">Smoking</label><input id="medication-smoking-details" class="cohri-details medication-detail" type="text" aria-label="Smoking details" hidden></span><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="alcohol">Alcohol</label><input id="medication-alcohol-details" class="cohri-details medication-detail" type="text" aria-label="Alcohol details" hidden></span><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="drugs">Marijuana/Street drugs</label><input id="medication-drugs-details" class="cohri-details medication-detail" type="text" aria-label="Marijuana/Street drugs details" hidden></span><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="bisphosphonate">Bisphosphonate drugs</label><input id="medication-bisphosphonate-details" class="cohri-details medication-detail" type="text" aria-label="Bisphosphonate drugs details" hidden></span><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="anticoagulant">Aspirin/Anticoagulant agents</label><input id="medication-anticoagulant-details" class="cohri-details medication-detail" type="text" aria-label="Aspirin/Anticoagulant agents details" hidden></span></div><label class="medical-additional-label" for="medicationDetails">Additional information</label><textarea id="medicationDetails" class="cohri-details history-blank" rows="2"></textarea></div></div>
-      <div class="cohri-row cohri-bordered-area dental-history-row"><label class="cohri-label" id="premedicationLabel" for="premedicationDetails">Dental history</label><div class="dental-history-content"><div class="dental-history-options" role="group" aria-label="Dental history options"><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Extraction">Extraction</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Crown/Bridge">Crown/Bridge</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="RCT">RCT</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Oral surgery">Oral surgery</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Implants">Implants</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Braces">Braces</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Injuries to face/jaw">Injuries to face/jaw</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Bruxism/Clenching">Bruxism/Clenching</label></div><label class="medical-additional-label" for="premedicationDetails">About dental chief complaint</label><textarea id="premedicationDetails" class="cohri-details history-blank" rows="2"></textarea></div></div>
+      <div class="cohri-row medication-history-row cohri-bordered-area"><div class="cohri-label history-review-heading"><label class="cohri-label" id="medicationLabel" for="medicationDetails">Other medication and social history</label><div class="history-review" data-review="medication" role="group" aria-label="Other medication changes" hidden><label class="cohri-option"><input class="history-review-choice" type="radio" name="review-medication" value="no-change" aria-controls="reviewContent-medication">No change</label><label class="cohri-option"><input class="history-review-choice" type="radio" name="review-medication" value="change" aria-controls="reviewContent-medication">Change</label></div></div><div class="medication-content history-review-content" id="reviewContent-medication"><div class="medication-options" role="group" aria-label="Medication and substance options"><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="smoking">Smoking</label><input id="medication-smoking-details" class="cohri-details medication-detail" type="text" aria-label="Smoking details" hidden></span><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="alcohol">Alcohol</label><input id="medication-alcohol-details" class="cohri-details medication-detail" type="text" aria-label="Alcohol details" hidden></span><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="drugs">Marijuana/Street drugs</label><input id="medication-drugs-details" class="cohri-details medication-detail" type="text" aria-label="Marijuana/Street drugs details" hidden></span><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="bisphosphonate">Bisphosphonate drugs</label><input id="medication-bisphosphonate-details" class="cohri-details medication-detail" type="text" aria-label="Bisphosphonate drugs details" hidden></span><span class="medication-option-row"><label class="cohri-option"><input class="medication-choice" type="checkbox" value="anticoagulant">Aspirin/Anticoagulant agents</label><input id="medication-anticoagulant-details" class="cohri-details medication-detail" type="text" aria-label="Aspirin/Anticoagulant agents details" hidden></span></div><label class="medical-additional-label" for="medicationDetails">Additional information</label><textarea id="medicationDetails" class="cohri-details history-blank" rows="2"></textarea></div></div>
+      <div class="cohri-row cohri-bordered-area dental-history-row"><label class="cohri-label" id="premedicationLabel" for="premedicationDetails">Dental history</label><div class="dental-history-content"><div class="dental-history-options" role="group" aria-label="Dental history options"><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Extraction">Extraction</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Crown/Bridge">Crown/Bridge</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="RCT">RCT</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Oral surgery">Oral surgery</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Implants">Implants</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Braces">Braces</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Injuries to face/jaw">Injuries to face/jaw</label><label class="cohri-option"><input class="dental-history-choice" type="checkbox" value="Bruxism/Clenching">Bruxism/Clenching</label></div><label class="medical-additional-label emergency-history-label" for="premedicationDetails">History of chief complaint</label><textarea id="premedicationDetails" class="cohri-details history-blank" rows="6" aria-label="History of chief complaint"></textarea></div></div>
     </section>
     <section class="clinical-panel treatment-provided radiograph-panel" aria-labelledby="radiographHeading">
       <h2 id="radiographHeading">Radiograph</h2>
@@ -131,9 +137,204 @@
     <section class="clinical-panel treatment-provided acceptance-decision-panel" aria-labelledby="acceptanceDecisionHeading">
       <h2 id="acceptanceDecisionHeading">Acceptance/ Decision</h2>
       <fieldset id="screeningAcceptance" class="decision-border" disabled><legend>New patient screening</legend><label class="decision-option"><input class="decision-choice" type="radio" name="acceptance-screening" value="conditional"><span>The patient is conditionally accepted pending further consults. Consent forms were signed and the next appointment was scheduled for COE.</span></label><label class="decision-option"><input class="decision-choice" type="radio" name="acceptance-screening" value="nonaccepted"><span>The patient is non-accepted/non-teaching, and the non-teach form was filled out and scanned in the patient chart.</span></label></fieldset>
-      <fieldset class="decision-border"><legend>Emergency/LOE</legend><textarea id="acceptanceEmergency" class="cohri-details decision-textarea" rows="6" aria-label="Emergency/LOE acceptance and decision"></textarea></fieldset>
       <div class="cohri-row" role="group" aria-label="Medical consult form"><strong>Medical consult form</strong><label class="cohri-option"><input class="decision-form-choice" type="radio" name="decision-medical-consult" value="none">None</label><label class="cohri-option"><input class="decision-form-choice" type="radio" name="decision-medical-consult" value="yes" aria-controls="decisionMedicalDetails">Yes</label><input id="decisionMedicalDetails" class="cohri-details decision-form-detail" type="text" aria-label="Medical consult form details" hidden></div>
       <div class="cohri-row" role="group" aria-label="Referral form"><strong>Referral form</strong><label class="cohri-option"><input class="decision-form-choice" type="radio" name="decision-referral" value="none">None</label><label class="cohri-option"><input class="decision-form-choice" type="radio" name="decision-referral" value="yes" aria-controls="decisionReferralSpecialist">Yes</label><select id="decisionReferralSpecialist" class="decision-form-select" aria-label="Referral specialist" hidden><option value="">Choose a specialist</option><option value="Oral and maxillofacial surgeon">Oral and maxillofacial surgeon</option><option value="Endodontist">Endodontist</option><option value="Pediatric dentist">Pediatric dentist</option><option value="Orthodontist">Orthodontist</option><option value="Periodontist">Periodontist</option><option value="Prosthodontist">Prosthodontist</option></select><label id="decisionReferralReasonLabel" class="referral-reason-label" for="decisionReferralReason" hidden>Reason <input id="decisionReferralReason" class="cohri-details decision-form-detail" type="text"></label></div>
+
+      <fieldset class="decision-border" id="limitedTreatment"><legend>Emergency/Limited Treatment</legend>
+        <label class="decision-option"><input class="limited-choice" id="limitedNone" type="checkbox">No treatment was provided today.</label>
+        <label class="decision-option"><input class="limited-choice" id="limitedAntibiotic" type="checkbox" aria-controls="limitedAntibioticFields">Antibiotic prescription</label>
+        <div id="limitedAntibioticFields" class="limited-detail" hidden><select id="limitedAntibioticType" aria-label="Antibiotic prescription"><option value="Amoxicillin 500 mg TID in 7 days">Amoxicillin 500 mg TID in 7 days</option><option value="Other">Other</option></select><input id="limitedAntibioticOther" class="cohri-details" type="text" aria-label="Other antibiotic prescription" hidden></div>
+        <label class="decision-option"><input class="limited-choice" id="limitedExtraction" type="checkbox" aria-controls="limitedExtractionChart">Emergency extraction</label>
+        <div id="limitedExtractionChart" class="limited-extraction-chart" hidden>
+          <div class="limited-dentition" role="group" aria-label="Extraction dentition"><button type="button" data-limited-mode="permanent" aria-pressed="true">Permanent</button><button type="button" data-limited-mode="primary" aria-pressed="false">Primary</button></div>
+          <div id="limitedUpper" class="limited-arch" aria-label="Upper teeth"></div><div id="limitedLower" class="limited-arch" aria-label="Lower teeth"></div><p id="limitedSelected" aria-live="polite">Select teeth for emergency extraction</p>
+        <section id="emergencyProvidedPanel" class="extraction-provided-panel treatment-provided" hidden>
+        <div class="cohri-row">
+          <label class="cohri-option">
+            <input id="emergency-consent" type="checkbox" class="emergency-provided-input"> Verbal and informed consent provided</label>
+        </div>
+        <div class="cohri-row provided-main-row" role="group" aria-labelledby="emergency-inhaledNOLabel">
+          <span id="emergency-inhaledNOLabel" class="cohri-label">Inhaled NO</span>
+          <label class="cohri-option">
+            <input id="emergency-inhaledNONone" class="emergency-provided-input" type="radio" name="emergency-inhaledNO" value="none" aria-keyshortcuts="N" title="Press N to select this option in the focused line"> None</label>
+          <label class="cohri-option">
+            <input id="emergency-inhaledNOYes" class="emergency-provided-input" type="radio" name="emergency-inhaledNO" value="yes" aria-keyshortcuts="Y" title="Press Y to select this option in the focused line"> Yes</label>
+        </div>
+        <div class="cohri-row provided-main-row" role="group" aria-labelledby="emergency-localAnesthesiaLabel">
+          <span id="emergency-localAnesthesiaLabel" class="cohri-label">Local anesthesia</span>
+          <label class="cohri-option">
+            <input id="emergency-topicalBenzocaine" class="emergency-provided-input" type="checkbox"> Topical benzocaine</label>
+          <label class="cohri-option">
+            <input id="emergency-nerveBlock" class="emergency-provided-input" type="checkbox" aria-controls="emergency-nerveBlockDetails"> Nerve block</label>
+          <label class="cohri-option">
+            <input id="emergency-localInfiltration" class="emergency-provided-input" type="checkbox" aria-controls="emergency-infiltrationDetails"> Local infiltration</label>
+        </div>
+        <div id="emergency-nerveBlockDetails" class="provided-conditional anesthesia-details" hidden>
+          <h3>Nerve block</h3>
+          <div class="anesthesia-fields">
+            <label for="emergency-nerveCarpules"># of carpules <input id="emergency-nerveCarpules" class="emergency-provided-input provided-number" type="number" min="0" step="any">
+            </label>
+            <label for="emergency-nerveLA">Name of LA <select id="emergency-nerveLA" class="emergency-provided-input">
+                <option value="lidocaine" selected>2% Lidocaine with 1:100K epi</option>
+                <option value="articaine">4% of Articaine with 1:100K epi</option>
+                <option value="mepivacaine">3% of Mepivacaine (plain)</option>
+                <option value="bupivacaine">0.5% of Bupivacaine with 1:200K epi</option>
+              </select>
+            </label>
+          </div>
+          <div class="anesthesia-locations">
+            <span class="field-caption">Locations</span>
+            <div class="nerve-side">
+              <label class="cohri-option">
+                <input id="emergency-nerveRight" class="emergency-provided-input" type="checkbox" aria-controls="emergency-nerveRightBlocks"> Right</label>
+              <div id="emergency-nerveRightBlocks" class="provided-conditional block-options" hidden>
+                <label class="cohri-option">
+                  <input id="emergency-nerveRight0" class="emergency-provided-input" type="checkbox"> PSA</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveRight1" class="emergency-provided-input" type="checkbox"> MSA</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveRight2" class="emergency-provided-input" type="checkbox"> ASA</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveRight3" class="emergency-provided-input" type="checkbox"> Palatal</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveRight4" class="emergency-provided-input" type="checkbox"> IAN</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveRight5" class="emergency-provided-input" type="checkbox"> Buccal block</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveRight6" class="emergency-provided-input" type="checkbox"> Mental block</label>
+              </div>
+            </div>
+            <div class="nerve-side">
+              <label class="cohri-option">
+                <input id="emergency-nerveLeft" class="emergency-provided-input" type="checkbox" aria-controls="emergency-nerveLeftBlocks"> Left</label>
+              <div id="emergency-nerveLeftBlocks" class="provided-conditional block-options" hidden>
+                <label class="cohri-option">
+                  <input id="emergency-nerveLeft0" class="emergency-provided-input" type="checkbox"> PSA</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveLeft1" class="emergency-provided-input" type="checkbox"> MSA</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveLeft2" class="emergency-provided-input" type="checkbox"> ASA</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveLeft3" class="emergency-provided-input" type="checkbox"> Palatal</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveLeft4" class="emergency-provided-input" type="checkbox"> IAN</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveLeft5" class="emergency-provided-input" type="checkbox"> Buccal block</label>
+                <label class="cohri-option">
+                  <input id="emergency-nerveLeft6" class="emergency-provided-input" type="checkbox"> Mental block</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="emergency-infiltrationDetails" class="provided-conditional anesthesia-details" hidden>
+          <h3>Local infiltration</h3>
+          <div class="anesthesia-fields">
+            <label for="emergency-infiltrationCarpules"># of carpules <input id="emergency-infiltrationCarpules" class="emergency-provided-input provided-number" type="number" min="0" step="any">
+            </label>
+            <label for="emergency-infiltrationLA">Name of LA <select id="emergency-infiltrationLA" class="emergency-provided-input">
+                <option value="lidocaine">2% Lidocaine with 1:100K epi</option>
+                <option value="articaine" selected>4% of Articaine with 1:100K epi</option>
+                <option value="mepivacaine">3% of Mepivacaine (plain)</option>
+                <option value="bupivacaine">0.5% of Bupivacaine with 1:200K epi</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <section class="provided-section">
+          <h3>Extraction technique</h3>
+          <div class="cohri-row" role="group" aria-labelledby="emergency-flapTechniqueLabel">
+            <strong id="emergency-flapTechniqueLabel" class="cohri-label">Flap technique</strong>
+            <label class="cohri-option">
+              <input id="emergency-flap" type="checkbox" class="emergency-provided-input" aria-controls="emergency-bladeDetails"> Blade</label>
+            <label id="emergency-bladeDetails" hidden>
+              <select id="emergency-blade" class="emergency-provided-input" aria-label="Blade type">
+                <option value="15" selected>15 blade</option>
+                <option value="12">12 blade</option>
+              </select>
+            </label>
+            <label class="cohri-option">
+              <input id="emergency-flapReflected" type="checkbox" class="emergency-provided-input"> Reflected by Molt 2 and 9</label>
+            <input id="emergency-reflector" type="hidden" value="Molt 2 and 9">
+          </div>
+          <div class="cohri-row" role="group" aria-labelledby="emergency-forcepsLabel">
+            <strong id="emergency-forcepsLabel" class="cohri-label">Forceps used</strong>
+            <label class="cohri-option">
+              <input id="emergency-forcepsChoice0" class="emergency-provided-input" type="checkbox" name="emergency-forceps-choice" value="#150"> #150</label>
+            <label class="cohri-option">
+              <input id="emergency-forcepsChoice1" class="emergency-provided-input" type="checkbox" name="emergency-forceps-choice" value="#151"> #151</label>
+            <label class="cohri-option">
+              <input id="emergency-forcepsChoice2" class="emergency-provided-input" type="checkbox" name="emergency-forceps-choice" value="#23 Cowhorn"> #23 Cowhorn</label>
+            <label class="cohri-option">
+              <input id="emergency-forcepsChoice3" class="emergency-provided-input" type="checkbox" name="emergency-forceps-choice" value="Others" aria-controls="emergency-forcepsOtherDetails"> Others</label>
+            <div id="emergency-forcepsOtherDetails" hidden>
+              <details class="forceps-dropdown">
+                <summary>Choose other forceps</summary>
+                <div class="forceps-dropdown-options">
+                  <label class="cohri-option">
+                    <input id="emergency-forcepsExtra0" class="emergency-provided-input" type="checkbox" value="#150S"> #150S</label>
+                  <label class="cohri-option">
+                    <input id="emergency-forcepsExtra1" class="emergency-provided-input" type="checkbox" value="#151S"> #151S</label>
+                  <label class="cohri-option">
+                    <input id="emergency-forcepsExtra2" class="emergency-provided-input" type="checkbox" value="#3 MEAD"> #3 MEAD</label>
+                  <label class="cohri-option">
+                    <input id="emergency-forcepsExtra3" class="emergency-provided-input" type="checkbox" value="#1107"> #1107</label>
+                  <label class="cohri-option">
+                    <input id="emergency-forcepsExtra4" class="emergency-provided-input" type="checkbox" value="#18R"> #18R</label>
+                  <label class="cohri-option">
+                    <input id="emergency-forcepsExtra5" class="emergency-provided-input" type="checkbox" value="#18L"> #18L</label>
+                </div>
+              </details>
+            </div>
+            <input id="emergency-forcepsOther" type="hidden" value="">
+            <input id="emergency-forceps" type="hidden" value="">
+          </div>
+          <div class="cohri-row" role="group" aria-labelledby="emergency-surgicalBurLabel">
+            <strong id="emergency-surgicalBurLabel" class="cohri-label">Surgical bur used</strong>
+            <label class="cohri-option">
+              <input id="emergency-surgicalBurNo" class="emergency-provided-input" type="radio" name="emergency-surgical-bur" value="no"> No</label>
+            <label class="cohri-option">
+              <input id="emergency-surgicalBurYes" class="emergency-provided-input" type="radio" name="emergency-surgical-bur" value="yes"> Yes</label>
+            <label id="emergency-burDetails" hidden>
+              <select id="emergency-bur" class="emergency-provided-input" aria-label="Surgical bur">
+                <option value="701">701 bur</option>
+                <option value="702">702 bur</option>
+              </select>
+            </label>
+          </div>
+          <div class="cohri-row" role="group" aria-labelledby="emergency-cryerLabel">
+            <strong id="emergency-cryerLabel" class="cohri-label">Cryer elevators used</strong>
+            <label class="cohri-option">
+              <input id="emergency-cryerNo" class="emergency-provided-input" type="radio" name="emergency-cryer-elevators" value="no"> No</label>
+            <label class="cohri-option">
+              <input id="emergency-cryerYes" class="emergency-provided-input" type="radio" name="emergency-cryer-elevators" value="yes"> Yes</label>
+          </div>
+          <div class="cohri-row" role="group" aria-labelledby="emergency-sutureUsedLabel">
+            <strong id="emergency-sutureUsedLabel" class="cohri-label">Suture used</strong>
+            <label class="cohri-option">
+              <input id="emergency-sutureUsedNo" class="emergency-provided-input" type="radio" name="emergency-suture-used" value="no"> No</label>
+            <label class="cohri-option">
+              <input id="emergency-sutureUsedYes" class="emergency-provided-input" type="radio" name="emergency-suture-used" value="yes"> Yes</label>
+            <label id="emergency-sutureTypeDetails" hidden>
+              <select id="emergency-sutureType" class="emergency-provided-input" aria-label="Suture type">
+                <option>3-0 Chromic gut</option>
+                <option>4-0 Chromic gut</option>
+                <option>4-0 PTFE</option>
+              </select>
+            </label>
+          </div>
+          <input id="emergency-suture" type="hidden" value="">
+        </section>
+        <label class="wide-field">Additional treatment details<textarea id="emergency-additional" rows="3" class="emergency-provided-input"></textarea>
+        </label>
+        <div class="cohri-row" role="group" aria-label="Emergency extraction postoperative care">
+          <label class="cohri-option"><input id="emergency-postop" class="emergency-provided-input" type="checkbox">Postoperative instructions provided.</label>
+          <label class="cohri-option"><input id="emergency-painReliefProvided" class="emergency-provided-input" type="checkbox">Pain relief regime provided.</label>
+        </div>
+      </section>
+        </div>
+        <label class="decision-option"><input class="limited-choice" id="limitedPulpotomy" type="checkbox" aria-controls="limitedPulpotomyDetails">Therapeutic pulpotomy</label>
+        <textarea id="limitedPulpotomyDetails" class="cohri-details pulpotomy-details" rows="6" aria-label="Therapeutic pulpotomy details" hidden></textarea>
+      </fieldset>
     </section>
     <div class="legacy-intraoral-controls" hidden>
     <div class="dentition-canvas">
@@ -339,49 +540,7 @@
     </div>
   </dialog>
   <template id="preceptorOptions"><option value="">Choose a preceptor</option><option value="Dr. Doyle">Dr. Doyle</option><option value="Dr. Hoch">Dr. Hoch</option><option value="Dr. Kohler">Dr. Kohler</option><option value="Dr. Palo">Dr. Palo</option><option value="Dr. McAllister">Dr. McAllister</option><option value="Dr. Roberts">Dr. Roberts</option><option value="Dr. Calderbank">Dr. Calderbank</option><option value="Dr. Goldsmith">Dr. Goldsmith</option><option value="Dr. Pollock">Dr. Pollock</option><option value="Dr. Poe">Dr. Poe</option><option value="Others">Others</option></template>
-  <script src="script.js?v=755248707a"></script>
+  <script src="script.js?v=e42f9e5c19"></script>
 
-<script>
-// Preserve one line per category without adding horizontal scrolling.
-(() => {
-  const sections = [...document.querySelectorAll('.finding-section, .treatment-section, .rx-tooth-lines, .note-panel, .chart-side-panel')];
-  let frame;
-  const fit = () => {
-    frame = null;
-    sections.forEach(section => {
-      if (!section.clientWidth) return;
-      const sectionStyle = getComputedStyle(section);
-      const sectionWidth = section.clientWidth - parseFloat(sectionStyle.paddingLeft) - parseFloat(sectionStyle.paddingRight);
-      section.querySelectorAll('.finding-row, .rx-tooth-options:not(.rx-wear-options), .note-fields-row').forEach(row => {
-        row.classList.add(row.classList.contains('note-fields-row') ? 'fit-note-fields' : 'fit-category-line');
-        row.style.zoom = '1';
-        // A category may be inside a smaller multi-column finding group.
-        let available = sectionWidth;
-        for (let parent = row.parentElement; parent && parent !== section; parent = parent.parentElement) {
-          if (getComputedStyle(parent).display === 'contents') continue;
-          const style = getComputedStyle(parent);
-          const width = parent.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
-          if (width > 0) available = Math.min(available, width);
-        }
-        const natural = Math.max(row.offsetWidth, row.scrollWidth);
-        row.style.zoom = String(Math.min(1, Math.max(0, available - 2) / (natural || 1)));
-      });
-    });
-  };
-  const schedule = () => { if (!frame) frame = requestAnimationFrame(fit); };
-  const widths = new WeakMap();
-  const observer = new ResizeObserver(entries => {
-    entries.forEach(entry => {
-      if (widths.get(entry.target) !== entry.contentRect.width) {
-        widths.set(entry.target, entry.contentRect.width); schedule();
-      }
-    });
-  });
-  sections.forEach(section => observer.observe(section));
-  window.addEventListener('resize', schedule);
-  if (document.fonts) document.fonts.ready.then(schedule);
-  schedule();
-})();
-</script>
 </body>
 </html>

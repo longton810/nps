@@ -488,24 +488,63 @@ function updateAcceptanceFormFields() {
   byId('decisionReferralSpecialist').hidden=query('input[name="decision-referral"]:checked')?.value!=='yes';
   byId('decisionReferralReasonLabel').hidden=byId('decisionReferralSpecialist').hidden;
 }
+function updateHistoryReview() {
+  const established = query('input[name="visit-type"]:checked')?.value === 'Emergency/Established patient';
+  all('.history-review').forEach(control => {
+    control.hidden = !established;
+    const choice = query('input[name="review-' + control.dataset.review + '"]:checked')?.value;
+    const content = byId('reviewContent-' + control.dataset.review);
+    const blurred = established && choice !== 'change';
+    content.classList.toggle('review-blurred', blurred);
+    content.inert = blurred;
+  });
+}
+function dentalHistoryHeading(visitType) {
+  return visitType?.startsWith('Emergency/') ? 'History of emergency' : 'History of chief complaint';
+}
+function updateVisitAppearance() {
+  const selected = query('input[name="visit-type"]:checked');
+  const historyHeading = dentalHistoryHeading(selected?.value);
+  query('label[for="premedicationDetails"]').textContent = historyHeading;
+  byId('premedicationDetails').setAttribute('aria-label', historyHeading);
+  document.body.classList.toggle('visit-unselected', !selected);
+  document.body.classList.toggle('visit-emergency', Boolean(selected?.value.startsWith('Emergency/')));
+  document.body.classList.toggle('visit-emergency-established', selected?.value === 'Emergency/Established patient');
+  all('.visit-type-button').forEach(button => {
+    button.setAttribute('aria-pressed', String(byId(button.dataset.visitInput).checked));
+  });
+  all('.clinical-panel').forEach(panel => { panel.inert = !selected; });
+  updateHistoryReview();
+  syncConditionalNV();
+}
 function updateAcceptanceOptions() {
+  updateVisitAppearance();
   updateAcceptanceFormFields();
-  byId('screeningAcceptance').disabled=query('input[name="visit-type"]:checked')?.value!=='New patient screening';
+  const visitType = query('input[name="visit-type"]:checked')?.value;
+  const emergency = Boolean(visitType?.startsWith('Emergency/'));
+  byId('screeningAcceptance').disabled = visitType !== 'New patient screening';
+  byId('screeningAcceptance').hidden = emergency;
+  byId('acceptanceDecisionHeading').textContent = emergency ? 'Limited treatment' : 'Acceptance/Decision';
 }
 function acceptanceDecisionText(data={},visitType) {
   const lines=[];
   if((visitType === undefined || visitType === "New patient screening") && acceptanceStatements[data?.screening])lines.push(acceptanceStatements[data.screening]);
-  if(data?.emergency?.trim())lines.push(data.emergency.trim());
-  if(data?.medicalConsult?.choice)lines.push('Medical consult form: '+(data.medicalConsult.choice==='none' ? 'None' : data.medicalConsult.details?.trim() || ''));
-  if(data?.referral?.choice)lines.push('Referral form: '+(data.referral.choice==='none' ? 'None' : 'Referred for '+(data.referral.specialist || '')+' with the reason - '+(data.referral.reason?.trim() || '')));
+  lines.push(...limitedTreatmentLines(data.limited));
+  if(data?.medicalConsult?.choice === 'yes')lines.push('Medical consult form: '+(data.medicalConsult.details?.trim() || ''));
+  if(data?.referral?.choice === 'yes')lines.push('Referral form: '+('Referred for '+(data.referral.specialist || '')+' with the reason - '+(data.referral.reason?.trim() || '')));
   return lines.join('\n');
 }
 function acceptanceDecisionNoteHTML(data={},visitType,escape) {
   const lines=[];
   if(visitType==='New patient screening' && acceptanceStatements[data?.screening])lines.push('<strong style="color:'+(data.screening==='conditional' ? '#2563eb' : '#dc2626')+'">'+escape(acceptanceStatements[data.screening])+'</strong>');
-  if(data?.emergency?.trim())lines.push(escape(data.emergency.trim()).replace(/\r?\n/g,'<br>'));
-  if(data?.medicalConsult?.choice)lines.push('<strong>Medical consult form: '+(data.medicalConsult.choice==='none' ? 'None' : escape(data.medicalConsult.details?.trim() || ''))+'</strong>');
-  if(data?.referral?.choice)lines.push('<strong>Referral form: '+(data.referral.choice==='none' ? 'None' : 'Referred for '+escape(data.referral.specialist || '')+' with the reason - '+escape(data.referral.reason?.trim() || ''))+'</strong>');
+  lines.push(...limitedTreatmentLines(data.limited).map(line => {
+    for (const heading of ['Antibiotic prescription:', 'Local anesthesia:', 'Extraction:', 'Post-operative care:', 'Therapeutic pulpotomy']) {
+      if (line.startsWith(heading)) return '<br><strong>' + heading + '</strong> ' + escape(line.slice(heading.length).trim());
+    }
+    return escape(line);
+  }));
+  if(data?.medicalConsult?.choice === 'yes')lines.push('<strong>Medical consult form: '+escape(data.medicalConsult.details?.trim() || '')+'</strong>');
+  if(data?.referral?.choice === 'yes')lines.push('<strong>Referral form: '+('Referred for '+escape(data.referral.specialist || '')+' with the reason - '+escape(data.referral.reason?.trim() || ''))+'</strong>');
   return lines.join('<br>');
 }
 
@@ -1196,9 +1235,12 @@ function readCOHRI() {
     choice: group.text ? "text" : query(`input[name="cohri-${name}"]:checked`)?.value || "",
     details: byId(group.input).value
   }]));
-  return { ...data, acceptanceDecision:{screening:query('input[name="acceptance-screening"]:checked')?.value || "",emergency:byId("acceptanceEmergency").value,medicalConsult:{choice:query('input[name="decision-medical-consult"]:checked')?.value || "",details:byId("decisionMedicalDetails").value},referral:{choice:query('input[name="decision-referral"]:checked')?.value || "",specialist:byId("decisionReferralSpecialist").value,reason:byId("decisionReferralReason").value}}, medicationOptions:readMedicationOptions(), dentalHistoryOptions:[...all(".dental-history-choice")].filter(input=>input.checked).map(input=>input.value), medicalConditions: readMedicalHistory(), allergy: {options:[...all(".allergy-choice")].filter(input=>input.checked).map(input=>input.value),details:byId("allergyDetails").value}, visitType: query('input[name="visit-type"]:checked')?.value || "", chiefComplaint: byId("chiefComplaint").value, extraOralExam: byId("extraOralExam").value, intraOralExam: byId("intraOralExam").value, intraOralStructured: readIntraOralExam(), extraOralStructured: readExtraOralExam(), radiographs: [...all(".radiograph-choice")].filter(input => input.checked).map(input => input.value), radiographExam: readRadiographState(), initialObservation: readInitialObservation() };
+  return { ...data, reviewStatus:Object.fromEntries(['history','allergy','medication'].map(key=>[key,query('input[name="review-'+key+'"]:checked')?.value || ''])), acceptanceDecision:{screening:query('input[name="acceptance-screening"]:checked')?.value || "",limited:readLimitedTreatment(),medicalConsult:{choice:query('input[name="decision-medical-consult"]:checked')?.value || "",details:byId("decisionMedicalDetails").value},referral:{choice:query('input[name="decision-referral"]:checked')?.value || "",specialist:byId("decisionReferralSpecialist").value,reason:byId("decisionReferralReason").value}}, medicationOptions:readMedicationOptions(), dentalHistoryOptions:[...all(".dental-history-choice")].filter(input=>input.checked).map(input=>input.value), medicalConditions: readMedicalHistory(), allergy: {options:[...all(".allergy-choice")].filter(input=>input.checked).map(input=>input.value),details:byId("allergyDetails").value}, visitType: query('input[name="visit-type"]:checked')?.value || "", chiefComplaint: byId("chiefComplaint").value, extraOralExam: byId("extraOralExam").value, intraOralExam: byId("intraOralExam").value, intraOralStructured: readIntraOralExam(), extraOralStructured: readExtraOralExam(), radiographs: [...all(".radiograph-choice")].filter(input => input.checked).map(input => input.value), radiographExam: readRadiographState(), initialObservation: readInitialObservation() };
 }
 function restoreCOHRI(data = {}) {
+  all('.history-review-choice').forEach(input => {
+    input.checked = input.value === data.reviewStatus?.[input.name.slice(7)];
+  });
   Object.entries(cohriGroups).forEach(([name, group]) => {
     const saved = data?.[name];
     all(`input[name="cohri-${name}"]`).forEach(input => { input.checked = input.value === saved?.choice; });
@@ -1213,7 +1255,7 @@ function restoreCOHRI(data = {}) {
   all(".allergy-choice").forEach(input=>{input.checked=Array.isArray(data?.allergy?.options) && data.allergy.options.includes(input.value);});
   byId("allergyDetails").value=typeof data?.allergy?.details==="string" ? data.allergy.details : "";
   all('input[name="acceptance-screening"]').forEach(input=>{input.checked=input.value===data?.acceptanceDecision?.screening;});
-  byId("acceptanceEmergency").value=typeof data?.acceptanceDecision?.emergency==="string" ? data.acceptanceDecision.emergency : "";
+  restoreLimitedTreatment(data?.acceptanceDecision?.limited);
   for(const [name,key] of [['decision-medical-consult','medicalConsult'],['decision-referral','referral']])all(`input[name="${name}"]`).forEach(input=>{input.checked=input.value===data?.acceptanceDecision?.[key]?.choice;});
   byId('decisionMedicalDetails').value=typeof data?.acceptanceDecision?.medicalConsult?.details==='string' ? data.acceptanceDecision.medicalConsult.details : '';
   byId('decisionReferralSpecialist').value=typeof data?.acceptanceDecision?.referral?.specialist==='string' ? data.acceptanceDecision.referral.specialist : '';
@@ -1335,7 +1377,10 @@ function generateClinicalNote(s) {
   const field = value => escape(value);
   const bold = value => `<strong>${escape(value)}</strong>`;
   const p = s.provided, c = s.cohri;
+  const reviewedStatus = name => c.visitType === 'Emergency/Established patient' && c.reviewStatus?.[name] !== 'change'
+    ? (c.reviewStatus?.[name] === 'no-change' ? 'No change' : '') : null;
   const status = name => {
+    if (['history','medication'].includes(name) && reviewedStatus(name) !== null) return reviewedStatus(name);
     const item = c[name];
     if (cohriGroups[name]?.text) return name === "history" ? [medicalHistoryText(c.medicalConditions),item?.details?.trim() || ""].filter(Boolean).join(". ") : name === "medication" ? [medicationOptionsText(c.medicationOptions),item?.details?.trim() || ""].filter(Boolean).join(". ") : name === "premedication" ? (c.dentalHistoryOptions || []).join(". ") : item?.details?.trim() || "";
     if (!item?.choice) return "";
@@ -1343,22 +1388,35 @@ function generateClinicalNote(s) {
     if (item.choice === "none") return "None";
     return item.details.trim() || (item.choice === "yes" ? "Yes" : "Change");
   };
+  const hasText = value => String(value ?? "").trim().length > 0;
+  const section = (label, value, newLine = false) => hasText(value)
+    ? [`${bold(label)}${newLine ? "<br>" : " "}${field(value).replace(/\r?\n/g, "<br>")}`] : [];
+  const appointment = [
+    hasText(c.visitType) ? field(c.visitType) : "",
+    hasText(c.chiefComplaint) ? `with the chief complaint of "${field(c.chiefComplaint)}"` : ""
+  ].filter(Boolean).join(" ");
+  const vitals = [
+    hasText(s.vitals.bp) ? `BP: ${s.vitals.bp} mmHg` : "",
+    hasText(s.vitals.pulse) ? `Pulse: ${s.vitals.pulse} bpm` : "",
+    hasText(s.vitals.temperature) ? `Temperature: ${s.vitals.temperature} F` : ""
+  ].filter(Boolean).join(". ");
   const lines = [
-    `${bold("Appointment for")}: ${field(c.visitType || "")} with the chief complaint of "${field(c.chiefComplaint || "")}"`, "",
-    `${bold("Initial observation:")} ${field(initialObservationText(c.initialObservation))}`,
-    `${bold("Vitals:")} BP: ${field(s.vitals.bp)} mmHg. Pulse: ${field(s.vitals.pulse)} bpm, Temperature: ${field(s.vitals.temperature)} F`,
-    `${bold("Medical history:")} ${field(status("history"))}`,
-    `${bold("Allergy:")} ${field([...(c.allergy?.options || []),c.allergy?.details?.trim() || ""].filter(Boolean).join(". "))}`,
-    `${bold("Other medication and social history:")} ${field(status("medication"))}`,
-    `${bold("Dental history:")} ${field(status("premedication"))}`,
-    `${bold("About dental chief complaint:")} ${field(c.premedication?.details || "").replace(/\r?\n/g, "<br>")}`, "",
-    `${bold("Radiograph taken:")} ${field((c.radiographs || []).join(", "))}`,
-    `${bold("Radiology Report:")} ${field(radiologyReportForNote(c.radiographExam))}`, "",
-    `${bold("Extra-oral screening:")}<br>${field(extraOralExamText(c)).replace(/\r?\n/g, "<br>")}`,
-    `${bold("Intra-oral screening:")} ${field(intraOralExamText(c)).replace(/\r?\n/g, "<br>")}`,
-    `${bold("Limited oral exam:")} ${field(c.intraOralExam || "").replace(/\r?\n/g, "<br>")}`,
-    ...(acceptanceDecisionText(c.acceptanceDecision,c.visitType) ? ["",`${bold("Acceptance/Decision:")}<br>${acceptanceDecisionNoteHTML(c.acceptanceDecision,c.visitType,escape)}`] : []),
-    "",`${bold("Procedure completed:")} ${field(procedureCompletedText(s)).replace(/\r?\n/g, "<br>")}`
+    ...(appointment ? [`${bold("Appointment for")}: ${appointment}`, ""] : []),
+    ...section("Initial observation:", initialObservationText(c.initialObservation)),
+    ...section("Vitals:", vitals),
+    ...section("Medical history:", status("history")),
+    ...section("Allergy:", reviewedStatus("allergy") ?? [...(c.allergy?.options || []), c.allergy?.details?.trim() || ""].filter(Boolean).join(". ")),
+    ...section("Other medication and social history:", status("medication")),
+    ...section("Dental history:", status("premedication")),
+    ...section(dentalHistoryHeading(c.visitType) + ":", c.premedication?.details),
+    ...section("Radiograph taken:", (c.radiographs || []).join(", ")),
+    ...section("Radiology Report:", radiologyReportForNote(c.radiographExam)),
+    ...section("Extra-oral screening:", extraOralExamText(c), true),
+    ...section("Intra-oral screening:", intraOralExamText(c)),
+    ...section("Limited oral exam:", c.intraOralExam),
+    ...(acceptanceDecisionText(c.acceptanceDecision,c.visitType) ? ["",`${bold(c.visitType?.startsWith("Emergency/") ? "Limited treatment:" : "Acceptance/Decision:")}<br>${acceptanceDecisionNoteHTML(c.acceptanceDecision,c.visitType,escape)}`] : []),
+    ...(appointment || vitals ? [""] : []),
+    `${bold("Procedure completed:")} ${field(procedureCompletedText(s)).replace(/\r?\n/g, "<br>")}`
   ];
   const rolePreceptor=role=>p['note'+role+'Preceptor']==='Others' ? p['note'+role+'Other'] || '' : p['note'+role+'Preceptor'] || '';
   const additionalPreceptors=[p.noteCodesDifferent && rolePreceptor('Codes') ? rolePreceptor('Codes')+' - for completed codes' : '',p.noteSwipeDifferent && rolePreceptor('Swipe') ? rolePreceptor('Swipe')+' - for swiping note' : ''].filter(Boolean);
@@ -1664,7 +1722,7 @@ all('.medication-choice').forEach(input=>input.addEventListener('change',()=>{
 updateMedicationOptions();
 
 all('.allergy-choice, .dental-history-choice, .decision-choice').forEach(input =>
-  input.addEventListener('change', () => saveOdontogram(true))
+  input.addEventListener('change', () => { syncConditionalNV(); saveOdontogram(true); })
 );
 
 updateAcceptanceOptions();
@@ -1686,3 +1744,206 @@ updateAcceptanceFormFields();
 byId('generatedNote').addEventListener('animationend',event=>{
   if(event.animationName==='note-copy-blink')byId('generatedNote').classList.remove('note-copy-blink');
 });
+
+all('.visit-type-button').forEach(button => button.addEventListener('click', () => {
+  const input = byId(button.dataset.visitInput);
+  input.checked = true;
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+}));
+updateVisitAppearance();
+
+all('.history-review-choice').forEach(input => input.addEventListener('change', () => {
+  updateHistoryReview();
+  saveOdontogram(true);
+}));
+updateHistoryReview();
+
+function syncConditionalNV() {
+  if(query('input[name="visit-type"]:checked')?.value === 'New patient screening' && query('input[name="acceptance-screening"]:checked')?.value === 'conditional') byId('noteNV').value = 'COE';
+}
+function readLimitedTreatment() {
+  return {provided:readEmergencyProvided(),none:byId('limitedNone').checked,antibiotic:byId('limitedAntibiotic').checked,antibioticType:byId('limitedAntibioticType').value,other:byId('limitedAntibioticOther').value,extraction:byId('limitedExtraction').checked,pulpotomy:byId('limitedPulpotomy').checked,pulpotomyDetails:byId('limitedPulpotomyDetails').value,mode:byId('limitedExtractionChart').dataset.mode === 'primary' ? 'primary' : 'permanent',teeth:JSON.parse(byId('limitedExtractionChart').dataset.teeth || '[]')};
+}
+function restoreLimitedTreatment(data={}) {
+  data = data || {};
+  restoreEmergencyProvided(data.provided);
+  for(const [key,id] of [['none','limitedNone'],['antibiotic','limitedAntibiotic'],['extraction','limitedExtraction'],['pulpotomy','limitedPulpotomy']])byId(id).checked=Boolean(data[key]);
+  byId('limitedAntibioticType').value=data.antibioticType==='Other'?'Other':'Amoxicillin 500 mg TID in 7 days';
+  byId('limitedAntibioticOther').value=data.other || '';
+  byId('limitedPulpotomyDetails').value=data.pulpotomyDetails || '';
+  byId('limitedExtractionChart').dataset.mode=['permanent','primary'].includes(data.mode)?data.mode:'permanent';
+  byId('limitedExtractionChart').dataset.teeth=JSON.stringify(Array.isArray(data.teeth)?data.teeth:[]);
+  updateLimitedTreatment();
+}
+function limitedTreatmentLines(data={}) {
+  if(!data)return [];
+  if(data.none)return ['No treatment was provided today.'];
+  const lines=[];
+  if(data.antibiotic)lines.push('Antibiotic prescription: '+(data.antibioticType==='Other' ? data.other?.trim() || 'Other' : data.antibioticType || 'Amoxicillin 500 mg TID in 7 days'));
+  if(data.extraction)lines.push('Emergency extraction'+(data.teeth?.length ? ': '+data.teeth.map(t=>'#'+t).join(', ') : ''));
+  if(data.extraction)lines.push(...emergencyProvidedLines(data.provided));
+  if(data.pulpotomy)lines.push('Therapeutic pulpotomy'+(data.pulpotomyDetails?.trim() ? ': '+data.pulpotomyDetails.trim() : ''));
+  return lines.length ? ['Emergency/Limited Treatment:',...lines] : [];
+}
+function updateLimitedTreatment() {
+  byId('limitedAntibioticFields').hidden=!byId('limitedAntibiotic').checked;
+  byId('limitedAntibioticOther').hidden=byId('limitedAntibioticType').value!=='Other';
+  byId('limitedExtractionChart').hidden=!byId('limitedExtraction').checked;
+  byId('emergencyProvidedPanel').hidden=!byId('limitedExtraction').checked;
+  byId('limitedPulpotomyDetails').hidden=!byId('limitedPulpotomy').checked;
+  updateEmergencyProvided();
+  drawLimitedChart();
+}
+function drawLimitedChart() {
+  const data=readLimitedTreatment();
+  const primary={4:'A',5:'B',6:'C',7:'D',8:'E',9:'F',10:'G',11:'H',12:'I',13:'J',20:'K',21:'L',22:'M',23:'N',24:'O',25:'P',26:'Q',27:'R',28:'S',29:'T'};
+  for(const [id,numbers] of [['limitedUpper',Array.from({length:16},(_,i)=>i+1)],['limitedLower',Array.from({length:16},(_,i)=>32-i)]]) {
+    byId(id).replaceChildren();
+    numbers.forEach(n=>{
+      const permanent=data.mode==='permanent';
+      const label=permanent?String(n):primary[n];if(!label)return;
+      const button=document.createElement('button');button.type='button';button.className='limited-tooth';
+      button.setAttribute('aria-label','Extract tooth '+label);button.setAttribute('aria-pressed',String(data.teeth.includes(label)));
+      button.innerHTML='<span>#'+label+'</span>';
+      button.addEventListener('click',()=>{byId('limitedExtractionChart').dataset.teeth=JSON.stringify(data.teeth.includes(label)?data.teeth.filter(t=>t!==label):[...data.teeth,label]);drawLimitedChart();saveOdontogram(true);});
+      byId(id).append(button);
+    });
+  }
+  all('[data-limited-mode]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.limitedMode===data.mode)));
+  byId('limitedSelected').textContent=data.teeth.length?'Selected: '+data.teeth.map(t=>'#'+t).join(', '):'Select teeth for emergency extraction';
+}
+all('.limited-choice').forEach(input=>input.addEventListener('change',()=>{
+  if(input.id==='limitedNone'&&input.checked)all('.limited-choice').forEach(other=>{if(other!==input)other.checked=false;});
+  else if(input.checked)byId('limitedNone').checked=false;
+  updateLimitedTreatment();saveOdontogram(true);
+}));
+byId('limitedAntibioticType').addEventListener('change',()=>{updateLimitedTreatment();saveOdontogram(true);});
+all('[data-limited-mode]').forEach(button=>button.addEventListener('click',()=>{
+  byId('limitedExtractionChart').dataset.mode=button.dataset.limitedMode;
+  byId('limitedExtractionChart').dataset.teeth='[]';drawLimitedChart();saveOdontogram(true);
+}));
+updateLimitedTreatment();
+
+// Read and restore extraction fields without mixing them with the legacy form.
+function emergencyProvidedFields() {
+  return [...all('#emergencyProvidedPanel .emergency-provided-input')];
+}
+function isChoiceField(input) {
+  return ['radio', 'checkbox'].includes(input.type);
+}
+function readEmergencyProvided() {
+  return Object.fromEntries(emergencyProvidedFields().map(input => [
+    input.id.replace('emergency-', ''),
+    isChoiceField(input) ? input.checked : input.value
+  ]));
+}
+function restoreEmergencyProvided(data = {}) {
+  emergencyProvidedFields().forEach(input => {
+    const saved = data?.[input.id.replace('emergency-', '')];
+    if (isChoiceField(input)) {
+      input.checked = typeof saved === 'boolean' ? saved : input.defaultChecked;
+    } else {
+      const fallback = input.tagName === 'SELECT'
+        ? [...input.options].find(option => option.defaultSelected)?.value || input.options[0]?.value || ''
+        : input.defaultValue;
+      input.value = typeof saved === 'string' ? saved : fallback;
+    }
+  });
+  updateEmergencyProvided();
+}
+function updateEmergencyProvided() {
+  for(const [target,source] of [['nerveBlockDetails','nerveBlock'],['infiltrationDetails','localInfiltration'],['nerveRightBlocks','nerveRight'],['nerveLeftBlocks','nerveLeft'],['bladeDetails','flap'],['burDetails','surgicalBurYes'],['sutureTypeDetails','sutureUsedYes'],['forcepsOtherDetails','forcepsChoice3']])byId('emergency-'+target).hidden=!byId('emergency-'+source).checked;
+}
+function emergencyProvidedLines(p={}) {
+  if(!p)return [];
+  const lines=[];
+  if(p.consent)lines.push('Verbal and informed consent provided.');
+  if(p.inhaledNOYes)lines.push('Inhaled NO: Yes.');
+  const anesthesia=[];
+  const anesthetics={lidocaine:'2% Lidocaine with 1:100K epi',articaine:'4% of Articaine with 1:100K epi',mepivacaine:'3% of Mepivacaine (plain)',bupivacaine:'0.5% of Bupivacaine with 1:200K epi'};
+  const quantity=key=>{
+    const value=String(p[key] || '').trim();
+    return value ? value+' '+(Number(value)===1?'carpule':'carpules') : '[Quantity needed] carpules';
+  };
+  if(p.topicalBenzocaine)anesthesia.push('Topical benzocaine around the tooth and '+(p.nerveBlock?'block injection':'injection')+' locations.');
+  if(p.nerveBlock){
+    const locations=[];
+    for(const [side,short] of [['Right','R'],['Left','L']])if(p['nerve'+side]){
+      ['PSA block','MSA block','ASA block','Palatal block','IAN block','Buccal block','Mental block'].forEach((block,index)=>{
+        if(p['nerve'+side+index])locations.push('('+short+') '+block);
+      });
+    }
+    anesthesia.push(quantity('nerveCarpules')+' of '+(anesthetics[p.nerveLA] || anesthetics.lidocaine)+' was administered via '+(locations.join(', ') || '[Block location needed]')+'.');
+  }
+  if(p.localInfiltration)anesthesia.push((p.nerveBlock?'Then local infiltration':'Local infiltration')+' with '+quantity('infiltrationCarpules')+' of '+(anesthetics[p.infiltrationLA] || anesthetics.articaine)+' was administered around the tooth.');
+  if(anesthesia.length)lines.push('Local anesthesia: '+anesthesia.join(' '));
+  const extraction=[];
+  if(p.flap)extraction.push((p.blade || '15')+' blade was used to create a flap.');
+  if(p.flapReflected)extraction.push('The flap was reflected with Molt 2 and 9.');
+  extraction.push('Small and large elevators were used to luxate the tooth.');
+  const forceps=['#150','#151','#23 Cowhorn'].filter((_,i)=>p['forcepsChoice'+i]);
+  if(p.forcepsChoice3)forceps.push(...['#150S','#151S','#3 MEAD','#1107','#18R','#18L'].filter((_,i)=>p['forcepsExtra'+i]));
+  if(forceps.length)extraction.push(forceps.join(', ')+' forceps were used to extract teeth.');
+  if(p.surgicalBurYes)extraction.push('The tooth was sectioned with '+(p.bur || '701')+' surgical bur and removed in parts.');
+  if(p.cryerYes)extraction.push('Cryer elevators were utilized to remove root tips and fractured tooth.');
+  extraction.push('The tooth and socket were checked to ensure no remaining root tips.','Socket compressed using gauze with finger pressure.');
+  if(p.sutureUsedNo)extraction.push('No suture was used to close sockets.');
+  else if(p.sutureUsedYes)extraction.push((p.sutureType || '3-0 Chromic gut')+' sutures were used to close sockets.');
+  if(p.additional?.trim())extraction.push(p.additional.trim());
+  lines.push('Extraction: '+extraction.join(' '));
+  const care=[];
+  if(p.postop && p.painReliefProvided)care.push('The patient was provided with post-op instructions and pain relief regime (Ibuprofen and Tylenol every 4-6 hours if needed).');
+  else if(p.postop)care.push('The patient was provided with post-op instructions.');
+  else if(p.painReliefProvided)care.push('The patient was provided with pain relief regime (Ibuprofen and Tylenol every 4-6 hours if needed).');
+  if(care.length && p.sutureUsedYes && ['3-0 Chromic gut','4-0 Chromic gut'].includes(p.sutureType))care.push('The patient was also informed that suture will dissolve on its own within 2 weeks.');
+  if(care.length)lines.push('Post-operative care: '+care.join(' '));
+  return lines;
+}
+emergencyProvidedFields().forEach(input=>{
+  input.addEventListener('change',()=>{updateEmergencyProvided();saveOdontogram(true);});
+  if(!isChoiceField(input))input.addEventListener('input',()=>saveOdontogram(true));
+});
+updateEmergencyProvided();
+
+
+// Responsive fitting for category rows and Note controls.
+;// Preserve one line per category without adding horizontal scrolling.
+(() => {
+  const sections = [...document.querySelectorAll('.finding-section, .treatment-section, .rx-tooth-lines, .note-panel, .chart-side-panel')];
+  let frame;
+  const fit = () => {
+    frame = null;
+    sections.forEach(section => {
+      if (!section.clientWidth) return;
+      const sectionStyle = getComputedStyle(section);
+      const sectionWidth = section.clientWidth - parseFloat(sectionStyle.paddingLeft) - parseFloat(sectionStyle.paddingRight);
+      section.querySelectorAll('.finding-row, .rx-tooth-options:not(.rx-wear-options), .note-fields-row').forEach(row => {
+        row.classList.add(row.classList.contains('note-fields-row') ? 'fit-note-fields' : 'fit-category-line');
+        row.style.zoom = '1';
+        // A category may be inside a smaller multi-column finding group.
+        let available = sectionWidth;
+        for (let parent = row.parentElement; parent && parent !== section; parent = parent.parentElement) {
+          if (getComputedStyle(parent).display === 'contents') continue;
+          const style = getComputedStyle(parent);
+          const width = parent.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+          if (width > 0) available = Math.min(available, width);
+        }
+        const natural = Math.max(row.offsetWidth, row.scrollWidth);
+        row.style.zoom = String(Math.min(1, Math.max(0, available - 2) / (natural || 1)));
+      });
+    });
+  };
+  const schedule = () => { if (!frame) frame = requestAnimationFrame(fit); };
+  const widths = new WeakMap();
+  const observer = new ResizeObserver(entries => {
+    entries.forEach(entry => {
+      if (widths.get(entry.target) !== entry.contentRect.width) {
+        widths.set(entry.target, entry.contentRect.width); schedule();
+      }
+    });
+  });
+  sections.forEach(section => observer.observe(section));
+  window.addEventListener('resize', schedule);
+  if (document.fonts) document.fonts.ready.then(schedule);
+  schedule();
+})();
