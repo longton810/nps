@@ -799,3 +799,39 @@ body.visit-emergency .limited-arch .limited-tooth:not([aria-pressed="true"]) { b
 .extraction-provided-panel .anesthesia-details[hidden] { display:none;}
 .pulpotomy-details { display:block; width:100%; min-height:160px; box-sizing:border-box; resize:vertical; margin:10px 0; padding:12px; border:1px solid #c4d1df; border-radius:10px; background:rgba(255,255,255,.75); font:inherit;}
 .pulpotomy-details[hidden] { display:none;}
+
+/* Radiograph chart: black field with light blue chart markings. */
+.radiograph-panel .rx-odontogram {
+  background:#000;
+  border-color:#8bd1ff;
+  color:#b5e2ff;
+}
+.radiograph-panel .rx-tooth-rectangle {
+  background:#000;
+  border-color:#8bd1ff;
+  color:#b5e2ff;
+}
+.radiograph-panel .rx-quadrant:nth-child(odd) { border-right-color:#8bd1ff; }
+.radiograph-panel .rx-quadrant:nth-child(-n+2) { border-bottom-color:#8bd1ff; }
+.radiograph-panel .rx-tooth-rectangle[aria-pressed="true"] {
+  background:#173d59;
+  border-color:#b5e2ff;
+  color:#e3f4ff;
+  outline:1px solid #8bd1ff;
+}
+.radiograph-panel .rx-tooth-rectangle.rx-missing {
+  background:#0c1922;
+  color:#8bd1ff;
+}
+.radiograph-panel .rx-tooth-rectangle.rx-missing[aria-pressed="true"] { background:#173d59; }
+.radiograph-panel .rx-bridge-line { background:#8bd1ff; }
+.radiograph-panel .rx-recent-finding,
+.radiograph-panel .rx-status,
+.radiograph-panel .rx-tooth-finding { color:#b5e2ff; }
+.radiograph-panel .rx-toolbar button {
+  background:#101f2b;
+  border:1px solid #609bc4;
+  color:#b5e2ff;
+}
+.radiograph-panel .rx-toolbar [aria-pressed="true"] { background:#23547b; border-color:#8bd1ff; }
+.radiograph-panel .rx-toolbar button:disabled { opacity:.5; }
