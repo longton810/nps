@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Diagnosis and Filling Odontogram</title>
-  <link rel="stylesheet" href="style.css?v=nps-dark-radiograph-1">
+  <link rel="stylesheet" href="style.css?v=postoperative-spacing-1">
 </head>
 <body class="visit-unselected">
   <div class="visit-type-row" role="group" aria-label="Visit type">
@@ -327,14 +327,16 @@
         </section>
         <label class="wide-field">Additional treatment details<textarea id="emergency-additional" rows="3" class="emergency-provided-input"></textarea>
         </label>
-        <div class="cohri-row" role="group" aria-label="Emergency extraction postoperative care">
-          <label class="cohri-option"><input id="emergency-postop" class="emergency-provided-input" type="checkbox">Postoperative instructions provided.</label>
+        <div class="cohri-row postoperative-care-options" role="group" aria-label="Emergency extraction postoperative care">
+          <label class="cohri-option"><input id="emergency-postop" class="emergency-provided-input" type="checkbox">Post-extraction instruction provided</label>
           <label class="cohri-option"><input id="emergency-painReliefProvided" class="emergency-provided-input" type="checkbox">Pain relief regime provided.</label>
+          <button id="painReliefPrint" type="button" hidden aria-label="Print pain relief regime" onclick="window.open('pain-relief-print.html', '_blank', 'noopener')">Print</button>
         </div>
       </section>
         </div>
-        <label class="decision-option"><input class="limited-choice" id="limitedPulpotomy" type="checkbox" aria-controls="limitedPulpotomyDetails">Therapeutic pulpotomy</label>
-        <textarea id="limitedPulpotomyDetails" class="cohri-details pulpotomy-details" rows="6" aria-label="Therapeutic pulpotomy details" hidden></textarea>
+        <label class="decision-option"><input class="limited-choice" id="limitedPulpotomy" type="checkbox" aria-controls="limitedPulpotomyDetails">Pulpal debridement (D3221)</label>
+        <textarea id="limitedPulpotomyDetails" class="cohri-details pulpotomy-details" rows="6" aria-label="Pulpal debridement (D3221) details" hidden></textarea>
+        <label class="decision-option"><input class="limited-choice" id="limitedIncisionDrainage" type="checkbox">Incision and drainage of abscess (D7510)</label>
       </fieldset>
     </section>
     <div class="legacy-intraoral-controls" hidden>
@@ -540,8 +542,8 @@
       <button id="confirmClearAll" type="button">Yes, delete all</button>
     </div>
   </dialog>
-  <template id="preceptorOptions"><option value="">Choose a preceptor</option><option value="Dr. Doyle">Dr. Doyle</option><option value="Dr. Hoch">Dr. Hoch</option><option value="Dr. Kohler">Dr. Kohler</option><option value="Dr. Palo">Dr. Palo</option><option value="Dr. McAllister">Dr. McAllister</option><option value="Dr. Roberts">Dr. Roberts</option><option value="Dr. Calderbank">Dr. Calderbank</option><option value="Dr. Goldsmith">Dr. Goldsmith</option><option value="Dr. Pollock">Dr. Pollock</option><option value="Dr. Poe">Dr. Poe</option><option value="Others">Others</option></template>
-  <script src="script.js?v=1df783a13e"></script>
+  <template id="preceptorOptions"><option value="">Choose a preceptor</option><option value="Dr. Benson">Dr. Benson</option><option value="Dr. Calderbank">Dr. Calderbank</option><option value="Dr. Doyle">Dr. Doyle</option><option value="Dr. Goldsmith">Dr. Goldsmith</option><option value="Dr. Gradisek">Dr. Gradisek</option><option value="Dr. Hoch">Dr. Hoch</option><option value="Dr. Kohler">Dr. Kohler</option><option value="Dr. McAllister">Dr. McAllister</option><option value="Dr. Palo">Dr. Palo</option><option value="Dr. Poe">Dr. Poe</option><option value="Dr. Pollock">Dr. Pollock</option><option value="Dr. Roberts">Dr. Roberts</option><option value="Others">Others</option></template>
+  <script src="script.js?v=limited-treatment-2"></script>
 
 </body>
 </html>

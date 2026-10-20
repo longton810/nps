@@ -538,7 +538,7 @@ function acceptanceDecisionNoteHTML(data={},visitType,escape) {
   const lines=[];
   if(visitType==='New patient screening' && acceptanceStatements[data?.screening])lines.push('<strong style="color:'+(data.screening==='conditional' ? '#2563eb' : '#dc2626')+'">'+escape(acceptanceStatements[data.screening])+'</strong>');
   lines.push(...limitedTreatmentLines(data.limited).map(line => {
-    for (const heading of ['Antibiotic prescription:', 'Local anesthesia:', 'Extraction:', 'Post-operative care:', 'Therapeutic pulpotomy']) {
+    for (const heading of ['Antibiotic prescription:', 'Local anesthesia:', 'Extraction:', 'Post-operative care:', 'Pulpal debridement (D3221)', 'Incision and drainage of abscess (D7510)']) {
       if (line.startsWith(heading)) return '<br><strong>' + heading + '</strong> ' + escape(line.slice(heading.length).trim());
     }
     return escape(line);
@@ -1371,7 +1371,8 @@ function procedureCompletedText(s) {
   if (limited && !limited.none) {
     if (limited.antibiotic) completed.push('Antibiotic prescription');
     if (limited.extraction) completed.push('Emergency extraction');
-    if (limited.pulpotomy) completed.push('Therapeutic pulpotomy');
+    if (limited.pulpotomy) completed.push('Pulpal debridement (D3221)');
+    if (limited.incisionDrainage) completed.push('Incision and drainage of abscess (D7510)');
   }
   completed.push('OHI','nutritional counseling');
   const recipient=child ? 'parents/guardian' : 'patient';
@@ -1768,12 +1769,12 @@ function syncConditionalNV() {
   if(query('input[name="visit-type"]:checked')?.value === 'New patient screening' && query('input[name="acceptance-screening"]:checked')?.value === 'conditional') byId('noteNV').value = 'COE';
 }
 function readLimitedTreatment() {
-  return {provided:readEmergencyProvided(),none:byId('limitedNone').checked,antibiotic:byId('limitedAntibiotic').checked,antibioticType:byId('limitedAntibioticType').value,other:byId('limitedAntibioticOther').value,extraction:byId('limitedExtraction').checked,pulpotomy:byId('limitedPulpotomy').checked,pulpotomyDetails:byId('limitedPulpotomyDetails').value,mode:byId('limitedExtractionChart').dataset.mode === 'primary' ? 'primary' : 'permanent',teeth:JSON.parse(byId('limitedExtractionChart').dataset.teeth || '[]')};
+  return {provided:readEmergencyProvided(),none:byId('limitedNone').checked,antibiotic:byId('limitedAntibiotic').checked,antibioticType:byId('limitedAntibioticType').value,other:byId('limitedAntibioticOther').value,extraction:byId('limitedExtraction').checked,incisionDrainage:byId('limitedIncisionDrainage').checked,pulpotomy:byId('limitedPulpotomy').checked,pulpotomyDetails:byId('limitedPulpotomyDetails').value,mode:byId('limitedExtractionChart').dataset.mode === 'primary' ? 'primary' : 'permanent',teeth:JSON.parse(byId('limitedExtractionChart').dataset.teeth || '[]')};
 }
 function restoreLimitedTreatment(data={}) {
   data = data || {};
   restoreEmergencyProvided(data.provided);
-  for(const [key,id] of [['none','limitedNone'],['antibiotic','limitedAntibiotic'],['extraction','limitedExtraction'],['pulpotomy','limitedPulpotomy']])byId(id).checked=Boolean(data[key]);
+  for(const [key,id] of [['none','limitedNone'],['antibiotic','limitedAntibiotic'],['extraction','limitedExtraction'],['pulpotomy','limitedPulpotomy'],['incisionDrainage','limitedIncisionDrainage']])byId(id).checked=Boolean(data[key]);
   byId('limitedAntibioticType').value=data.antibioticType==='Other'?'Other':'Amoxicillin 500 mg TID in 7 days';
   byId('limitedAntibioticOther').value=data.other || '';
   byId('limitedPulpotomyDetails').value=data.pulpotomyDetails || '';
@@ -1788,7 +1789,8 @@ function limitedTreatmentLines(data={}) {
   if(data.antibiotic)lines.push('Antibiotic prescription: '+(data.antibioticType==='Other' ? data.other?.trim() || 'Other' : data.antibioticType || 'Amoxicillin 500 mg TID in 7 days'));
   if(data.extraction)lines.push('Emergency extraction'+(data.teeth?.length ? ': '+data.teeth.map(t=>'#'+t).join(', ') : ''));
   if(data.extraction)lines.push(...emergencyProvidedLines(data.provided));
-  if(data.pulpotomy)lines.push('Therapeutic pulpotomy'+(data.pulpotomyDetails?.trim() ? ': '+data.pulpotomyDetails.trim() : ''));
+  if(data.pulpotomy)lines.push('Pulpal debridement (D3221)'+(data.pulpotomyDetails?.trim() ? ': '+data.pulpotomyDetails.trim() : ''));
+  if(data.incisionDrainage)lines.push('Incision and drainage of abscess (D7510)');
   return lines.length ? ['Emergency/Limited Treatment:',...lines] : [];
 }
 function updateLimitedTreatment() {
@@ -1858,6 +1860,7 @@ function restoreEmergencyProvided(data = {}) {
   updateEmergencyProvided();
 }
 function updateEmergencyProvided() {
+ document.getElementById('painReliefPrint').hidden = !document.getElementById('emergency-painReliefProvided').checked;
   for(const [target,source] of [['nerveBlockDetails','nerveBlock'],['infiltrationDetails','localInfiltration'],['nerveRightBlocks','nerveRight'],['nerveLeftBlocks','nerveLeft'],['bladeDetails','flap'],['burDetails','surgicalBurYes'],['sutureTypeDetails','sutureUsedYes'],['forcepsOtherDetails','forcepsChoice3']])byId('emergency-'+target).hidden=!byId('emergency-'+source).checked;
 }
 function emergencyProvidedLines(p={}) {

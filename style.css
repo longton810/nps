@@ -835,3 +835,28 @@ body.visit-emergency .limited-arch .limited-tooth:not([aria-pressed="true"]) { b
 }
 .radiograph-panel .rx-toolbar [aria-pressed="true"] { background:#23547b; border-color:#8bd1ff; }
 .radiograph-panel .rx-toolbar button:disabled { opacity:.5; }
+
+/* Keep the handout print control hidden until selected. */
+#painReliefPrint[hidden] { display: none !important; }
+@media print { #painReliefPrint { display: none !important; } }
+
+/* Match the selected Full permanent button without dentition behavior. */
+#painReliefPrint {
+  padding: 4px 9px;
+  border: 1px solid rgba(37,99,235,.45);
+  border-radius: 999px;
+  background: linear-gradient(135deg,#4c91f6,#2563eb);
+  color: white;
+  font: normal 11px/1.1 Arial,sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37,99,235,.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background .15s,box-shadow .15s,transform .15s;
+}
+#painReliefPrint:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(44,75,114,.12); }
+#painReliefPrint:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { #painReliefPrint { transition: none; } }
+
+/* Separate the postoperative care choices while keeping Print beside pain relief. */
+.postoperative-care-options > label:first-child { margin-inline-end: 28px; }
