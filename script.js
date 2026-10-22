@@ -20,7 +20,7 @@ const rxFindingHistory = [];
 let rxPreviousReportText = "";
 let rxRecentFinding = "";
 function rxDefaultState() {
-  return {mode:"permanent",teeth:Object.fromEntries(Array.from({length:32},(_,i)=>[i+1,{age:"permanent",missing:false,inactive:false}])),findings:[],bridges:[],bone:{},oralPathology:"",wear:{generalized:false,localized:false,teeth:""},dentition:{maxillae:"",mandible:""},report:null};
+  return {mode:"permanent",teeth:Object.fromEntries(Array.from({length:32},(_,i)=>[i+1,{age:"permanent",missing:false,inactive:false}])),findings:[],bridges:[],bone:{},oralPathology:"",wear:{generalized:false,localized:false,teeth:""},dentition:{maxillae:"Partially dentate/edentulous",mandible:"Partially dentate/edentulous"},report:null};
 }
 function rxLabel(number, state = rxState) {
   return state.teeth[number]?.age === "primary" ? rxPrimaryMap[number] || "" : String(number);
@@ -30,10 +30,11 @@ function restoreRadiographState(saved) {
   rxState = rxDefaultState(); rxSelected.clear(); rxFindingHistory.length=0; rxRecentFinding="";
   if (saved && typeof saved === "object") {
     rxState.wear={generalized:saved.wear?.generalized===true,localized:saved.wear?.localized===true,teeth:typeof saved.wear?.teeth==="string" ? saved.wear.teeth : ""};
-    const dentitionOptions=["Full permanent","Partially dentate","Partially edentulous","Edentulous"];
+    const dentitionOptions=["Full primary","Mixed dentition","Full permanent","Partially dentate/edentulous","Edentulous"];
     for(const jaw of ['maxillae','mandible']) {
-      const value=typeof saved.dentition==='string' ? saved.dentition : saved.dentition?.[jaw];
-      rxState.dentition[jaw]=dentitionOptions.includes(value) ? value : '';
+      let value=typeof saved.dentition==='string' ? saved.dentition : saved.dentition?.[jaw];
+      if (['Partially dentate','Partially edentulous'].includes(value)) value='Partially dentate/edentulous';
+      rxState.dentition[jaw]=dentitionOptions.includes(value) ? value : 'Partially dentate/edentulous';
     }
     rxState.report = typeof saved.report === "string" ? saved.report : null;
     if (["permanent","primary","mixed","custom"].includes(saved.mode)) rxState.mode=saved.mode;
